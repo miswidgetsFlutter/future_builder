@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:future_builder/future_json/pagina2.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -20,26 +21,15 @@ class _MyHomePageState extends State<MyHomePage> {
     
     var opciones = jsonData["data"];
 
-    //String nombre = opciones[8]["item"]["name"];
-
     List<User> nom = [];
 
     for (var i in opciones) {
       
-      User user = User(i["item"]["name"],i["item"]["description"]);
-
-      //nom.add(i["item"]["name"]);
-      //nom.add(i["item"]["description"]);
+      User user = User(i["item"]["name"],i["item"]["description"],i["item"]["images"]["icon"]);
 
       nom.add(user);
 
     }
-
-    for (var item in nom) {
-      print(item);
-    }
-
-    print(nom);
     return nom;
   }
 
@@ -53,7 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: FutureBuilder(
           future: _getItem(),
           builder: (BuildContext context, AsyncSnapshot snapshot){
-            print(snapshot.data);
             if (snapshot.data == null) {
               return Container(
                 child: Center(
@@ -67,14 +56,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   var jiji = snapshot.data[index].description == null ? "no tiene poder": snapshot.data[index].description;
                   return ListTile(
                     leading: CircleAvatar(
-                      child: Text("${index+1}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),),
-                      backgroundColor: Colors.pink,
+                      //child: Text("${index+1}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),),
+                      backgroundImage: NetworkImage(snapshot.data[index].imagen),
                     ),
                     title: Text(snapshot.data[index].name),
                     subtitle: Text(jiji),
-                    //subtitle: Text(snapshot.data[index].description),
-                    
-                    onTap: (){},
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => DetailPage(snapshot.data[index])
+                      ));
+                    },
                   );
                 },
               );
@@ -92,6 +83,7 @@ class User {
   
   final String name;
   final String description;
+  final String imagen;
   
-  User(this.name, this.description);
+  User(this.name, this.description, this.imagen);
 }
