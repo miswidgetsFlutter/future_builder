@@ -13,7 +13,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int inc = 1;
 
   Future<dynamic> _getItem() async {
     var data = await http.get("https://fortnite-api.theapinetwork.com/store/get");
@@ -23,7 +22,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     String nombre = opciones[8]["item"]["name"];
 
-    return nombre;
+    List<String> nom = [];
+
+    for (var i in opciones) {
+      
+      nom.add(i["item"]["name"]);
+    }
+
+    return nom;
   }
 
   @override
@@ -36,9 +42,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: FutureBuilder(
           future: _getItem(),
           builder: (BuildContext context, AsyncSnapshot snapshot){
-            return Center(
-              child: Text(snapshot.data),
-            );
+            print(snapshot.data);
+            if (snapshot.data == null) {
+              return Container(
+                child: Center(
+                  child: Text("cargando...."),
+                ),
+              );
+            }else{
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      child: Icon(Icons.desktop_mac),
+                    ),
+                    title: Text(snapshot.data[index]),
+                    subtitle: Text("del fornais"),
+                    onTap: (){},
+                  );
+                },
+              );
+            }
           },
         ),
         
