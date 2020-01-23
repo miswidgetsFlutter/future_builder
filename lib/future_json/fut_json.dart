@@ -15,20 +15,31 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   Future<dynamic> _getItem() async {
-    var data = await http.get("https://fortnite-api.theapinetwork.com/store/get");
+    http.Response data = await http.get("https://fortnite-api.theapinetwork.com/store/get");
     Map<String, dynamic> jsonData = json.decode(data.body);
     
     var opciones = jsonData["data"];
 
-    String nombre = opciones[8]["item"]["name"];
+    //String nombre = opciones[8]["item"]["name"];
 
-    List<String> nom = [];
+    List<User> nom = [];
 
     for (var i in opciones) {
       
-      nom.add(i["item"]["name"]);
+      User user = User(i["item"]["name"],i["item"]["description"]);
+
+      //nom.add(i["item"]["name"]);
+      //nom.add(i["item"]["description"]);
+
+      nom.add(user);
+
     }
 
+    for (var item in nom) {
+      print(item);
+    }
+
+    print(nom);
     return nom;
   }
 
@@ -49,16 +60,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text("cargando...."),
                 ),
               );
-            }else{
+            }else if(snapshot.data != null){
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
+                  var jiji = snapshot.data[index].description == null ? "no tiene poder": snapshot.data[index].description;
                   return ListTile(
                     leading: CircleAvatar(
-                      child: Icon(Icons.desktop_mac),
+                      child: Text("${index+1}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),),
+                      backgroundColor: Colors.pink,
                     ),
-                    title: Text(snapshot.data[index]),
-                    subtitle: Text("del fornais"),
+                    title: Text(snapshot.data[index].name),
+                    subtitle: Text(jiji),
+                    //subtitle: Text(snapshot.data[index].description),
+                    
                     onTap: (){},
                   );
                 },
@@ -68,21 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.description),
-        onPressed: (){
-          _getItem();
-        },
-      ),
+      
     );
   }
 }
 
-class Item {
+class User {
+  
   final String name;
   final String description;
-  final String type;
-  final String legendary;
-
-  Item(this.name, this.description, this.type, this.legendary);
+  
+  User(this.name, this.description);
 }
